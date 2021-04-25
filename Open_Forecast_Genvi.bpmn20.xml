@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="HPCRESTfulWorkflow2" name="Open Forecast Genvi" isExecutable="true">
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <endEvent id="sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910"></endEvent>
+    <serviceTask id="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36" name="Run Genvi
+Post Processing" flowable:type="http">
+      <extensionElements>
+        <flowable:field name="requestMethod">
+          <flowable:string><![CDATA[POST]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="requestUrl">
+          <flowable:expression><![CDATA[http://hpc-api.open-forecast.eu:8080/HPC-RESTful/1.0.0/job?accessToken=${hpcpostjobtoken}]]></flowable:expression>
+        </flowable:field>
+        <flowable:field name="requestHeaders">
+          <flowable:string><![CDATA[Content-Type: application/json]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="requestBody">
+          <flowable:string><![CDATA[{
+  "name": "Run genvi",
+  "commands": [
+    {
+      "subJobType": "hpc",
+      "parameters": "/usr/users/openforecast-runner/genvi_submit.sh"
+    }
+  ],
+  "jobMetaData": {
+    "error": "",
+    "output": "/usr/users/openforecast-runner/genvi_sbumit_test.out",
+    "hasFile": false
+  }
+}]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="failStatusCodes">
+          <flowable:string><![CDATA[401, 405, 500]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="responseVariableName">
+          <flowable:string><![CDATA[myResponse]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="saveResponseVariableAsJson">
+          <flowable:string><![CDATA[true]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <userTask id="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101" name="Input Job
+Token" flowable:assignee="$INITIATOR" flowable:formKey="HPCPostJob" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-E7A0E838-752E-4031-9F90-95D0ED248E0B" sourceRef="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101" targetRef="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36"></sequenceFlow>
+    <intermediateCatchEvent id="sid-8C58DEF9-AF86-441D-832C-1709ED5820D7">
+      <timerEventDefinition>
+        <timeCycle>R1000/P2D</timeCycle>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-041FE7F7-3884-471E-9148-BFE7682BA19F" sourceRef="startEvent1" targetRef="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101"></sequenceFlow>
+    <sequenceFlow id="sid-A47A73DF-D26F-41DC-905B-52626300BFB7" sourceRef="sid-8C58DEF9-AF86-441D-832C-1709ED5820D7" targetRef="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36"></sequenceFlow>
+    <sequenceFlow id="sid-796E445F-F1E8-4C51-A910-116D79B84525" sourceRef="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36" targetRef="sid-8C58DEF9-AF86-441D-832C-1709ED5820D7"></sequenceFlow>
+    <sequenceFlow id="sid-BE9F9340-14FB-4AB5-A326-9829BD86DB90" sourceRef="sid-8C58DEF9-AF86-441D-832C-1709ED5820D7" targetRef="sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HPCRESTfulWorkflow2">
+    <bpmndi:BPMNPlane bpmnElement="HPCRESTfulWorkflow2" id="BPMNPlane_HPCRESTfulWorkflow2">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="50.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910" id="BPMNShape_sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910">
+        <omgdc:Bounds height="28.0" width="28.0" x="675.0" y="101.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36" id="BPMNShape_sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36">
+        <omgdc:Bounds height="80.0" width="100.0" x="345.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101" id="BPMNShape_sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101">
+        <omgdc:Bounds height="80.0" width="100.0" x="165.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8C58DEF9-AF86-441D-832C-1709ED5820D7" id="BPMNShape_sid-8C58DEF9-AF86-441D-832C-1709ED5820D7">
+        <omgdc:Bounds height="31.0" width="31.0" x="544.5" y="99.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-796E445F-F1E8-4C51-A910-116D79B84525" id="BPMNEdge_sid-796E445F-F1E8-4C51-A910-116D79B84525">
+        <omgdi:waypoint x="444.95000000000005" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="544.5" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-041FE7F7-3884-471E-9148-BFE7682BA19F" id="BPMNEdge_sid-041FE7F7-3884-471E-9148-BFE7682BA19F">
+        <omgdi:waypoint x="79.94999918773193" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="165.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E7A0E838-752E-4031-9F90-95D0ED248E0B" id="BPMNEdge_sid-E7A0E838-752E-4031-9F90-95D0ED248E0B">
+        <omgdi:waypoint x="264.95000000000005" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="345.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A47A73DF-D26F-41DC-905B-52626300BFB7" id="BPMNEdge_sid-A47A73DF-D26F-41DC-905B-52626300BFB7">
+        <omgdi:waypoint x="560.5" y="99.5"></omgdi:waypoint>
+        <omgdi:waypoint x="560.5" y="41.0"></omgdi:waypoint>
+        <omgdi:waypoint x="395.0" y="41.0"></omgdi:waypoint>
+        <omgdi:waypoint x="395.0" y="75.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BE9F9340-14FB-4AB5-A326-9829BD86DB90" id="BPMNEdge_sid-BE9F9340-14FB-4AB5-A326-9829BD86DB90">
+        <omgdi:waypoint x="576.4498817554846" y="115.43774365219849"></omgdi:waypoint>
+        <omgdi:waypoint x="675.0001009915921" y="115.054279921789"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
