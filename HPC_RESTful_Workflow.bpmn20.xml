@@ -9,26 +9,26 @@
           <flowable:string><![CDATA[POST]]></flowable:string>
         </flowable:field>
         <flowable:field name="requestUrl">
-          <flowable:expression><![CDATA[http://hpc-api-instance/HPC-RESTful/1.0.0/job?accessToken=${hpcpostjobtoken}]]></flowable:expression>
+          <flowable:expression><![CDATA[http://hpc-api.open-forecast.eu:8080/HPC-RESTful/1.0.0/job?accessToken=${hpcpostjobtoken}]]></flowable:expression>
         </flowable:field>
         <flowable:field name="requestHeaders">
           <flowable:string><![CDATA[Content-Type: application/json]]></flowable:string>
         </flowable:field>
         <flowable:field name="requestBody">
-          <flowable:expression><![CDATA[{
-  "name": "Compile flowable",
+          <flowable:string><![CDATA[{
+  "name": "Run genvi",
   "commands": [
     {
-      "subJobType": "compile",
-      "parameters": "/usr/users/testuser/data/input/HelloWorld/Makefile"
+      "subJobType": "hpc",
+      "parameters": "/usr/users/openforecast-runner/genvi_submit.sh"
     }
   ],
   "jobMetaData": {
     "error": "",
-    "output": "${hpcpostjoboutput}",
+    "output": "/usr/users/openforecast-runner/genvi_sbumit_test.out",
     "hasFile": false
   }
-}]]></flowable:expression>
+}]]></flowable:string>
         </flowable:field>
         <flowable:field name="failStatusCodes">
           <flowable:string><![CDATA[401, 405, 500]]></flowable:string>
@@ -42,14 +42,12 @@
       </extensionElements>
     </serviceTask>
     <exclusiveGateway id="sid-E964DF9D-C619-4F53-9128-1036FAF0016D"></exclusiveGateway>
-    <sequenceFlow id="sid-1C563C7F-1C88-481E-B951-E934951A66E4" sourceRef="startEvent1" targetRef="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101"></sequenceFlow>
     <userTask id="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101" name="Input Job" flowable:assignee="$INITIATOR" flowable:formKey="HPCPostJob" flowable:formFieldValidation="true">
       <extensionElements>
         <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
       </extensionElements>
     </userTask>
     <sequenceFlow id="sid-E7A0E838-752E-4031-9F90-95D0ED248E0B" sourceRef="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101" targetRef="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36"></sequenceFlow>
-    <sequenceFlow id="sid-ACF5E6D3-D310-4907-B069-B3798631990E" sourceRef="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36" targetRef="sid-E964DF9D-C619-4F53-9128-1036FAF0016D"></sequenceFlow>
     <userTask id="sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473" name="Job Created" flowable:assignee="$INITIATOR" flowable:formKey="HPCJobCreated" flowable:formFieldValidation="true">
       <extensionElements>
         <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
@@ -71,7 +69,7 @@
           <flowable:string><![CDATA[GET]]></flowable:string>
         </flowable:field>
         <flowable:field name="requestUrl">
-          <flowable:expression><![CDATA[http://hpc-api-instance/HPC-RESTful/1.0.0/job/${myResponse.jobId}?accessToken=${hpcpostjobtoken}]]></flowable:expression>
+          <flowable:expression><![CDATA[http://hpc-api.open-forecast.eu/HPC-RESTful/1.0.0/job/${myResponse.jobId}?accessToken=${hpcpostjobtoken}]]></flowable:expression>
         </flowable:field>
         <flowable:field name="requestHeaders">
           <flowable:string><![CDATA[Content-Type: application/json]]></flowable:string>
@@ -102,49 +100,57 @@
       </extensionElements>
     </userTask>
     <sequenceFlow id="sid-5A60FB6D-1C8B-4BE0-ABB5-94AFF55E7A47" sourceRef="sid-5852D679-9C5A-4185-A08A-7AB405C08744" targetRef="sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910"></sequenceFlow>
-    <sequenceFlow id="sid-90AD1DB6-F4CD-4C81-A5B1-001B5DB204BC" sourceRef="sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473" targetRef="sid-11C61B17-4774-411F-8A05-F4E6E6B2437E"></sequenceFlow>
-    <sequenceFlow id="sid-249A4BD0-EA60-4B49-B257-0E3EB3242485" sourceRef="sid-E964DF9D-C619-4F53-9128-1036FAF0016D" targetRef="sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${myResponse.status == "new"}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="sid-E0A446CC-6E77-48B6-93C6-B30A82A4947D" sourceRef="sid-E964DF9D-C619-4F53-9128-1036FAF0016D" targetRef="sid-EF73D1F0-9214-4BDF-BA06-19ABD2DD159E">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${myResponse.status != "new"}]]></conditionExpression>
-    </sequenceFlow>
     <sequenceFlow id="sid-2CCF56ED-4C8B-4A50-BB48-2332AE25B495" sourceRef="sid-3C917334-C0B9-4996-BDAC-D76FBC4E6219" targetRef="sid-3A68F0E0-3421-4235-BDB6-EC0863D58B5E">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hpcjobstatus == "No"}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="sid-E5B6EFF5-01A2-4281-A3C1-7486F2BE0E40" sourceRef="sid-3C917334-C0B9-4996-BDAC-D76FBC4E6219" targetRef="sid-88DB2668-47FC-414F-82A4-AC52965CAC17">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hpcjobstatus == "Yes"}]]></conditionExpression>
     </sequenceFlow>
+    <sequenceFlow id="sid-A3B4C3B9-0180-4E40-8525-96E3655CB5A4" sourceRef="sid-88DB2668-47FC-414F-82A4-AC52965CAC17" targetRef="sid-0689D552-FE70-4069-AD37-5F4709C8F8DE"></sequenceFlow>
     <sequenceFlow id="sid-BC7EB19D-5E7F-4CB3-9FAB-0AF4BBCB77DA" sourceRef="sid-0689D552-FE70-4069-AD37-5F4709C8F8DE" targetRef="sid-11C61B17-4774-411F-8A05-F4E6E6B2437E">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${myResponseStatus.status != "completed"}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="sid-34B3E357-234B-4377-B9C9-C7160F7E3798" sourceRef="sid-0689D552-FE70-4069-AD37-5F4709C8F8DE" targetRef="sid-5852D679-9C5A-4185-A08A-7AB405C08744">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${myResponseStatus.status == "completed"}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="sid-A3B4C3B9-0180-4E40-8525-96E3655CB5A4" sourceRef="sid-88DB2668-47FC-414F-82A4-AC52965CAC17" targetRef="sid-0689D552-FE70-4069-AD37-5F4709C8F8DE"></sequenceFlow>
+    <sequenceFlow id="sid-90AD1DB6-F4CD-4C81-A5B1-001B5DB204BC" sourceRef="sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473" targetRef="sid-11C61B17-4774-411F-8A05-F4E6E6B2437E"></sequenceFlow>
+    <sequenceFlow id="sid-E0A446CC-6E77-48B6-93C6-B30A82A4947D" sourceRef="sid-E964DF9D-C619-4F53-9128-1036FAF0016D" targetRef="sid-EF73D1F0-9214-4BDF-BA06-19ABD2DD159E">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${myResponse.status != "200 OK"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-249A4BD0-EA60-4B49-B257-0E3EB3242485" sourceRef="sid-E964DF9D-C619-4F53-9128-1036FAF0016D" targetRef="sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${myResponse.status == "200 OK"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="sid-0F03E448-36F3-49F1-88EC-625404A5D195" name="Check Reponse" flowable:assignee="$INITIATOR" flowable:formKey="HPCJobStatus" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-6652A619-67D4-4774-94EA-A1DE653F2914" sourceRef="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36" targetRef="sid-0F03E448-36F3-49F1-88EC-625404A5D195"></sequenceFlow>
+    <sequenceFlow id="sid-A5EFEBFB-E416-4F84-960D-B5AD03D1F7C1" sourceRef="sid-0F03E448-36F3-49F1-88EC-625404A5D195" targetRef="sid-E964DF9D-C619-4F53-9128-1036FAF0016D"></sequenceFlow>
+    <sequenceFlow id="sid-1C563C7F-1C88-481E-B951-E934951A66E4" sourceRef="startEvent1" targetRef="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_HPCRESTfulWorkflow">
     <bpmndi:BPMNPlane bpmnElement="HPCRESTfulWorkflow" id="BPMNPlane_HPCRESTfulWorkflow">
       <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
-        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="85.0"></omgdc:Bounds>
+        <omgdc:Bounds height="30.0" width="30.0" x="50.0" y="285.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910" id="BPMNShape_sid-5F0DF9B1-5565-4398-9C8A-7A8EBF94A910">
         <omgdc:Bounds height="28.0" width="28.0" x="1081.4083408798167" y="87.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36" id="BPMNShape_sid-286B1C7E-E52F-469E-BADC-8B5861EC6E36">
-        <omgdc:Bounds height="80.0" width="100.0" x="210.0" y="59.99999999999997"></omgdc:Bounds>
+        <omgdc:Bounds height="80.0" width="100.0" x="15.0" y="59.99999999999997"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-E964DF9D-C619-4F53-9128-1036FAF0016D" id="BPMNShape_sid-E964DF9D-C619-4F53-9128-1036FAF0016D">
         <omgdc:Bounds height="40.0" width="40.0" x="339.61251131972506" y="79.99999999999997"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101" id="BPMNShape_sid-1EE9D45C-ACD0-4750-8CAD-C929D911D101">
-        <omgdc:Bounds height="80.0" width="100.0" x="75.0" y="60.0"></omgdc:Bounds>
+        <omgdc:Bounds height="80.0" width="100.0" x="15.0" y="165.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473" id="BPMNShape_sid-78F6F296-F0AC-4494-9F59-1B1FEB3A0473">
         <omgdc:Bounds height="79.99999999999999" width="99.99999999999994" x="404.3006087139584" y="59.999999999999986"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-EF73D1F0-9214-4BDF-BA06-19ABD2DD159E" id="BPMNShape_sid-EF73D1F0-9214-4BDF-BA06-19ABD2DD159E">
-        <omgdc:Bounds height="80.0" width="100.0" x="309.61251131972506" y="150.0"></omgdc:Bounds>
+        <omgdc:Bounds height="80.0" width="100.0" x="309.61251131972506" y="165.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-11C61B17-4774-411F-8A05-F4E6E6B2437E" id="BPMNShape_sid-11C61B17-4774-411F-8A05-F4E6E6B2437E">
         <omgdc:Bounds height="80.0" width="100.0" x="533.6768035024251" y="60.0"></omgdc:Bounds>
@@ -164,21 +170,20 @@
       <bpmndi:BPMNShape bpmnElement="sid-5852D679-9C5A-4185-A08A-7AB405C08744" id="BPMNShape_sid-5852D679-9C5A-4185-A08A-7AB405C08744">
         <omgdc:Bounds height="80.0" width="100.0" x="945.0" y="61.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0F03E448-36F3-49F1-88EC-625404A5D195" id="BPMNShape_sid-0F03E448-36F3-49F1-88EC-625404A5D195">
+        <omgdc:Bounds height="80.0" width="100.0" x="180.0" y="59.99999999999997"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-2CCF56ED-4C8B-4A50-BB48-2332AE25B495" id="BPMNEdge_sid-2CCF56ED-4C8B-4A50-BB48-2332AE25B495">
         <omgdi:waypoint x="683.4607652811831" y="120.53271096023279"></omgdi:waypoint>
         <omgdi:waypoint x="683.2459934599739" y="165.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="sid-ACF5E6D3-D310-4907-B069-B3798631990E" id="BPMNEdge_sid-ACF5E6D3-D310-4907-B069-B3798631990E">
-        <omgdi:waypoint x="309.9499999999963" y="100.24946931877709"></omgdi:waypoint>
-        <omgdi:waypoint x="340.01212232372933" y="100.39961100400426"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-249A4BD0-EA60-4B49-B257-0E3EB3242485" id="BPMNEdge_sid-249A4BD0-EA60-4B49-B257-0E3EB3242485">
         <omgdi:waypoint x="379.15343437112074" y="100.3985997126185"></omgdi:waypoint>
         <omgdi:waypoint x="404.3006087139555" y="100.26516089284046"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-E0A446CC-6E77-48B6-93C6-B30A82A4947D" id="BPMNEdge_sid-E0A446CC-6E77-48B6-93C6-B30A82A4947D">
-        <omgdi:waypoint x="360.0057697466913" y="119.54570707070702"></omgdi:waypoint>
-        <omgdi:waypoint x="359.835695677267" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.02116516587887" y="119.53191642651294"></omgdi:waypoint>
+        <omgdi:waypoint x="359.8036596450839" y="165.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-BC7EB19D-5E7F-4CB3-9FAB-0AF4BBCB77DA" id="BPMNEdge_sid-BC7EB19D-5E7F-4CB3-9FAB-0AF4BBCB77DA">
         <omgdi:waypoint x="891.6042254909445" y="119.7316467908949"></omgdi:waypoint>
@@ -190,9 +195,13 @@
         <omgdi:waypoint x="909.6047640653356" y="101.32727272727273"></omgdi:waypoint>
         <omgdi:waypoint x="944.999999999999" y="101.00855855855855"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A5EFEBFB-E416-4F84-960D-B5AD03D1F7C1" id="BPMNEdge_sid-A5EFEBFB-E416-4F84-960D-B5AD03D1F7C1">
+        <omgdi:waypoint x="279.95000000000005" y="99.99999999999997"></omgdi:waypoint>
+        <omgdi:waypoint x="339.61251131972506" y="99.99999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-E7A0E838-752E-4031-9F90-95D0ED248E0B" id="BPMNEdge_sid-E7A0E838-752E-4031-9F90-95D0ED248E0B">
-        <omgdi:waypoint x="174.95" y="100.0"></omgdi:waypoint>
-        <omgdi:waypoint x="210.0" y="99.99999999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="65.0" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="65.0" y="139.95"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-5E9C014D-C9DC-4BBC-9936-E88C49F0598D" id="BPMNEdge_sid-5E9C014D-C9DC-4BBC-9936-E88C49F0598D">
         <omgdi:waypoint x="633.626803502423" y="100.0"></omgdi:waypoint>
@@ -204,6 +213,10 @@
         <omgdi:waypoint x="827.6910956851251" y="101.0"></omgdi:waypoint>
         <omgdi:waypoint x="870.0" y="101.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6652A619-67D4-4774-94EA-A1DE653F2914" id="BPMNEdge_sid-6652A619-67D4-4774-94EA-A1DE653F2914">
+        <omgdi:waypoint x="114.94999999999774" y="99.99999999999997"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="99.99999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-5A60FB6D-1C8B-4BE0-ABB5-94AFF55E7A47" id="BPMNEdge_sid-5A60FB6D-1C8B-4BE0-ABB5-94AFF55E7A47">
         <omgdi:waypoint x="1044.9499999999907" y="101.0"></omgdi:waypoint>
         <omgdi:waypoint x="1081.4083408798167" y="101.0"></omgdi:waypoint>
@@ -212,13 +225,13 @@
         <omgdi:waypoint x="702.5939213422904" y="101.39859971261853"></omgdi:waypoint>
         <omgdi:waypoint x="727.7410956851223" y="101.26516089284048"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="sid-1C563C7F-1C88-481E-B951-E934951A66E4" id="BPMNEdge_sid-1C563C7F-1C88-481E-B951-E934951A66E4">
-        <omgdi:waypoint x="44.94999797575196" y="100.0"></omgdi:waypoint>
-        <omgdi:waypoint x="75.0" y="100.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-90AD1DB6-F4CD-4C81-A5B1-001B5DB204BC" id="BPMNEdge_sid-90AD1DB6-F4CD-4C81-A5B1-001B5DB204BC">
         <omgdi:waypoint x="504.2506087139584" y="99.99999999999999"></omgdi:waypoint>
         <omgdi:waypoint x="533.6768035024251" y="99.99999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1C563C7F-1C88-481E-B951-E934951A66E4" id="BPMNEdge_sid-1C563C7F-1C88-481E-B951-E934951A66E4">
+        <omgdi:waypoint x="65.0" y="285.0"></omgdi:waypoint>
+        <omgdi:waypoint x="65.0" y="244.95000000000002"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
